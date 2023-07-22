@@ -65,7 +65,8 @@ int print_octal(va_list types, char buffer[],
 
 	while (num > 0)
 	{
-		buffer[i--] = (num % 8) + '0';		num /= 8;
+		buffer[i--] = (num % 8) + '0';
+		num /= 8;
 	}
 
 	if (flags & F_HASH && init_num != 0)
@@ -158,4 +159,3 @@ int print_hexa(va_list types, char map_to[], char buffer[],
 
 	return (write_unsgnd(0, i, buffer, flags, width, precision, size));
 }
-
