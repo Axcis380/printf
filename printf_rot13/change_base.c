@@ -1,4 +1,4 @@
-#include "holberton.h"
+#include "main.h"
 /**
 * change_base - changes number base
 * @num: input number
