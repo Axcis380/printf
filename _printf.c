@@ -1,11 +1,31 @@
 #include "main.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <unistd.h> 
 
 #define BUFF_SIZE 1024
 
-void print_buffer(char buffer[], int *buff_ind);
+// Helper function declarations (you need to implement these)
+int get_flags(const char *format, int *i);
+int get_width(const char *format, int *i, va_list list);
+int get_precision(const char *format, int *i, va_list list);
+int get_size(const char *format, int *i);
+int handle_print(const char *format, int *i, va_list list, char buffer[], int flags, int width, int precision, int size);
+
+/**
+ * print_buffer - Prints the contents of the buffer if it exists
+ * @buffer: Array of chars
+ * @buff_ind: Index at which to add the next char, represents the length.
+ */
+void print_buffer(char buffer[], int *buff_ind)
+{
+	if (*buff_ind > 0)
+	{
+		write(1, buffer, *buff_ind);
+		*buff_ind = 0;
+	}
+}
 
 /**
  * _printf - Printf function
@@ -57,18 +77,3 @@ int _printf(const char *format, ...)
 
 	return printed_chars;
 }
-
-/**
- * print_buffer - Prints the contents of the buffer if it exists
- * @buffer: Array of chars
- * @buff_ind: Index at which to add the next char, represents the length.
- */
-void print_buffer(char buffer[], int *buff_ind)
-{
-	if (*buff_ind > 0)
-	{
-		write(1, buffer, *buff_ind);
-		*buff_ind = 0;
-	}
-}
-
