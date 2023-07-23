@@ -1,6 +1,6 @@
 #include <stdio.h>
-/*#include "holberton.h"
-*/
+#include "holberton.h"
+
 /**
  * main - test for NULL string
  *
