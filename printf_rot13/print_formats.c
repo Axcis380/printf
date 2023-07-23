@@ -1,4 +1,4 @@
-#include "holberton.h"
+#include "main.h"
 /**
  * print_formats - compares and prints according to the struct
  * @i:. iterator
