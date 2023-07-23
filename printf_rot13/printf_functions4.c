@@ -1,4 +1,4 @@
-#include "holberton.h"
+#include "main.h"
 /**
  * replace_str - replace no printable characters by \x + hexa value
  * @s: pointer to char
