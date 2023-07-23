@@ -1,11 +1,6 @@
 #include "main.h"
 #include <stdbool.h> 
 
-/**
- * is_digit - Check if a character is a digit
- * @c: The character to check
- * Return: true if the character is a digit, false otherwise
- */
 bool is_digit(char c)
 {
     return (c >= '0' && c <= '9');
