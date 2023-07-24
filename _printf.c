@@ -1,82 +1,66 @@
 #include "main.h"
 
-int valid_precentage(const char *format, int *i);
+void print_buffer(char buffer[], int *buff_ind);
 
 /**
- * _printf - prints a formatted string to stdout, similar to printf.
- * @format: the format of the string to be printed.
- *
- * This function prints a formatted string to the stdout stream. It
- * accepts a format string as its first argument and any additional arguments
- * will be used to replace format specifiers in the format string. The function
- *
- * Return: the number of characters printed to the stdout stream.
+ * _printf - Printf function
+ * @format: format.
+ * Return: Printed chars.
  */
 int _printf(const char *format, ...)
 {
-	va_list args, args_flags, args_width;
-	flags_t flags = {0};
-	width_t width = {0};
-	int (*pfn)(va_list);
-	int i = 0, printed = 0;
+	int i, printed = 0, printed_chars = 0;
+	int flags, width, precision, size, buff_ind = 0;
+	va_list list;
+	char buffer[BUFF_SIZE];
 
-	if (!format)
+	if (format == NULL)
 		return (-1);
-	va_start(args, format);
-	(va_copy(args_flags, args), va_copy(args_width, args));
-	for (; format && format[i]; i++)
+
+	va_start(list, format);
+
+	for (i = 0; format && format[i] != '\0'; i++)
 	{
-		if (format[i] == '%')
+		if (format[i] != '%')
 		{
-			if (!valid_precentage(format, &i))
-				return (-1);
-			/* get conversion_index by getting [flags, width..] first */
-			pfn = get_conversion(format, &i, args, &flags, &width);
-
-			parse_flags(&flags, args_flags, pfn, &printed);
-			parse_width(&width, args_width, pfn, &printed);
-			parse_length(&flags, args, pfn, &printed);
-
-			/* TODO: check length outside this func*/
-			if (flags.h || flags.l)
-				continue;
-			/* for valid conversion call print_func, otherwise print as is*/
-			printed += pfn
-						   ? pfn(args)
-						   : _putchar('%') + _putchar(format[i]);
+			buffer[buff_ind++] = format[i];
+			if (buff_ind == BUFF_SIZE)
+				print_buffer(buffer, &buff_ind);
+			/* write(1, &format[i], 1);*/
+			printed_chars++;
 		}
 		else
-			printed += _putchar(format[i]);
+		{
+			print_buffer(buffer, &buff_ind);
+			flags = get_flags(format, &i);
+			width = get_width(format, &i, list);
+			precision = get_precision(format, &i, list);
+			size = get_size(format, &i);
+			++i;
+			printed = handle_print(format, &i, list, buffer,
+				flags, width, precision, size);
+			if (printed == -1)
+				return (-1);
+			printed_chars += printed;
+		}
 	}
-	va_end(args);
-	(va_end(args_flags), va_end(args_width));
-	return (printed);
+
+	print_buffer(buffer, &buff_ind);
+
+	va_end(list);
+
+	return (printed_chars);
 }
 
 /**
- * valid_precentage - Self explain
- * @format: The string to be evaluated
- * @i: Pointer to the index of the character being evaluated
- * Return: 1 if valid specifer, 0 otherwise
+ * print_buffer - Prints the contents of the buffer if it exist
+ * @buffer: Array of chars
+ * @buff_ind: Index at which to add next char, represents the length.
  */
-int valid_precentage(const char *format, int *i)
+void print_buffer(char buffer[], int *buff_ind)
 {
-	int j;
+	if (*buff_ind > 0)
+		write(1, &buffer[0], *buff_ind);
 
-	if (format[++(*i)] == '\0')
-		return (0);
-	j = *i;
-
-	/* check if no caractere after '%', return false */
-	for (; format[j] == ' '; j++)
-	{
-		if (format[*i + 1] == '\0')
-			return (0);
-		else if (format[*i + 1] == ' ')
-			(*i)++;
-		else
-			break;
-	}
-	/* ignore extra valid_precentage between '%' and 'specefier' */
-	return (1);
+	*buff_ind = 0;
 }
