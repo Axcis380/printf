@@ -1,125 +1,86 @@
 #include "main.h"
 
 /**
- * get_handler - gets the correct func
+ * is_printable - Evaluates if a char is printable
+ * @c: Char to be evaluated.
  *
- * @c: char
- * Return: func
- *
+ * Return: 1 if c is printable, 0 otherwise
  */
-
-int (*get_handler(char c))(va_list, flags_t *)
+int is_printable(char c)
 {
-	pHandler_t hndlr_arr[] = {
-		{'i', print_int},
-		{'s', print_string},
-		{'c', print_char},
-		{'d', print_int},
-		{'u', print_unsigned},
-		{'b', print_binary},
-		{'o', print_octal},
-		{'x', print_hex},
-		{'X', print_hex_upper},
-		{'S', print_S},
-		{'p', print_address},
-		{'R', print_rot13},
-		{'r', print_rev},
-		{'%', print_percent},
-		{0, NULL}
-	};
-	int i = 0;
+	if (c >= 32 && c < 127)
+		return (1);
 
-	while (hndlr_arr[i].c)
-	{
-		if (hndlr_arr[i].c == c)
-			return (hndlr_arr[i].func);
-		i++;
-	}
-	return (NULL);
+	return (0);
 }
 
 /**
- * get_flag - gets flag
- * @s: char
- * @flag: flag pointer
+ * append_hexa_code - Append ascci in hexadecimal code to buffer
+ * @buffer: Array of chars.
+ * @i: Index at which to start appending.
+ * @ascii_code: ASSCI CODE.
+ * Return: Always 3
+ */
+int append_hexa_code(char ascii_code, char buffer[], int i)
+{
+	char map_to[] = "0123456789ABCDEF";
+	/* The hexa format code is always 2 digits long */
+	if (ascii_code < 0)
+		ascii_code *= -1;
+
+	buffer[i++] = '\\';
+	buffer[i++] = 'x';
+
+	buffer[i++] = map_to[ascii_code / 16];
+	buffer[i] = map_to[ascii_code % 16];
+
+	return (3);
+}
+
+/**
+ * is_digit - Verifies if a char is a digit
+ * @c: Char to be evaluated
  *
- * Return: int
+ * Return: 1 if c is a digit, 0 otherwise
  */
-int get_flag(const char *s, flags_t *flag)
+int is_digit(char c)
 {
-	int i = 0;
+	if (c >= '0' && c <= '9')
+		return (1);
 
-	switch (*s)
-	{
-		case '+':
-			flag->plus = 1;
-			i = 1;
-			break;
-		case ' ':
-			flag->space = 1;
-			i = 1;
-			break;
-		case '#':
-			flag->hash = 1;
-			i = 1;
-			break;
-		case 'l':
-			flag->longer = 1;
-			i = 1;
-			break;
-		case 'h':
-			flag->shorter = 1;
-			i = 1;
-			break;
-	}
-
-	return (i);
+	return (0);
 }
 
 /**
- * count_digit - returns the number of digits
- * @i: int
- * Return: number of digits
+ * convert_size_number - Casts a number to the specified size
+ * @num: Number to be casted.
+ * @size: Number indicating the type to be casted.
+ *
+ * Return: Casted value of num
  */
-int count_digit(long int i)
+long int convert_size_number(long int num, int size)
 {
-	unsigned long int d = 0, u;
+	if (size == S_LONG)
+		return (num);
+	else if (size == S_SHORT)
+		return ((short)num);
 
-	if (i < 0)
-		u = i * -1;
-	else
-		u = i;
-	while (u != 0)
-	{
-		u /= 10;
-		d++;
-	}
-	return (d);
+	return ((int)num);
 }
 
-
 /**
- * convert - converts number to string
- * @num: int
- * @base: base
- * @upper: upper or not
- * Return: string
+ * convert_size_unsgnd - Casts a number to the specified size
+ * @num: Number to be casted
+ * @size: Number indicating the type to be casted
+ *
+ * Return: Casted value of num
  */
-char *convert(unsigned long int num, int base, int upper)
+long int convert_size_unsgnd(unsigned long int num, int size)
 {
-	static char *map;
-	static char con_buff[50];
-	char *ptr;
+	if (size == S_LONG)
+		return (num);
+	else if (size == S_SHORT)
+		return ((unsigned short)num);
 
-	map = (upper)
-		? "0123456789ABCDEF"
-		: "0123456789abcdef";
-	ptr = &con_buff[49];
-	*ptr = '\0';
-	do {
-		*--ptr = map[num % base];
-		num /= base;
-	} while (num != 0);
-
-	return (ptr);
+	return ((unsigned int)num);
 }
